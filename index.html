@@ -891,15 +891,23 @@
             if (!track) return;
             
             const folder = track.getAttribute('data-src'); // e.g., 'cls_id'
-            const scores = videoScores[folder] || []; // Get scores for this folder
+            const scores = videoScores[folder] || []; 
 
-            for (let i = 0; i <= 19; i++) {
+            // 1. Create a list of indices [0, 1, ... 19]
+            let indices = Array.from({length: 20}, (_, i) => i);
+
+            // 2. Shuffle the indices randomly
+            indices.sort(() => Math.random() - 0.5);
+
+            // 3. Iterate through the SHUFFLED indices
+            indices.forEach(i => {
+                // 'i' is the original index, ensuring the correct file and score are paired
                 const num = i.toString().padStart(2, '0');
                 const filename = `ep_${num}.mp4`;
                 
-                // Get the score for this specific episode (if it exists)
+                // Get the score corresponding to the file index 'i'
                 const scoreValue = scores[i] !== undefined ? scores[i] : null;
-                const iconHtml = getStatusIcon(scoreValue);
+                const iconHtml = getStatusIcon(scoreValue); // Assumes you have this function defined above
 
                 const item = document.createElement('div');
                 item.className = 'carousel-item';
@@ -915,9 +923,11 @@
                 `;
                 
                 track.appendChild(item);
+                
+                // Attach observer to the new video element
                 const vid = item.querySelector('video');
                 if(vid) observer.observe(vid);
-            }
+            });
         });
 
         // --- 4. HANDLE MANUAL VIDEOS (KUKA) ---
